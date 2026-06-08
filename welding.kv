@@ -1,0 +1,225 @@
+#:kivy 2.0
+
+<MainScreen>:
+    MDBoxLayout:
+        orientation: 'vertical'
+        padding: dp(20)
+        spacing: dp(20)
+
+        MDTopAppBar:
+            title: "Журнал сварочных работ"
+            elevation: 2
+
+        Widget:
+            size_hint_y: 0.1
+
+        MDLabel:
+            id: title_label
+            text: "Welding Journal"
+            halign: "center"
+            font_style: "H3"
+            bold: True
+            theme_text_color: "Primary"
+
+        Widget:
+            size_hint_y: 0.1
+
+        MDRaisedButton:
+            text: "Новая запись"
+            size_hint: 0.8, None
+            height: dp(50)
+            pos_hint: {"center_x": 0.5}
+            on_release: root.go_to_add_record()
+
+        MDRaisedButton:
+            text: "Список записей"
+            size_hint: 0.8, None
+            height: dp(50)
+            pos_hint: {"center_x": 0.5}
+            on_release: root.go_to_list_records()
+
+        Widget:
+            size_hint_y: 0.3
+
+<AddRecordScreen>:
+    MDBoxLayout:
+        orientation: 'vertical'
+
+        MDTopAppBar:
+            title: "Новая сварочная запись"
+            left_action_items: [["arrow-left", lambda x: setattr(root.manager, 'current', 'main')]]
+            elevation: 2
+
+        MDBoxLayout:
+            orientation: 'vertical'
+            spacing: dp(15)
+            padding: dp(20)
+            size_hint_y: None
+            height: self.minimum_height
+
+            MDTextField:
+                id: object_input
+                hint_text: "Название объекта"
+                mode: "rectangle"
+                required: True
+
+            MDTextField:
+                id: welder_input
+                hint_text: "ФИО сварщика"
+                mode: "rectangle"
+                required: True
+
+            MDLabel:
+                text: "Сила тока (А)"
+                size_hint_y: None
+                height: dp(30)
+
+            BoxLayout:
+                orientation: 'horizontal'
+                size_hint_y: None
+                height: dp(50)
+                
+                MDSlider:
+                    id: current_slider
+                    min: 50
+                    max: 300
+                    value: 150
+                    size_hint_x: 0.8
+                
+                MDLabel:
+                    id: current_value_label
+                    text: "150 А"
+                    size_hint_x: 0.2
+                    halign: "center"
+
+            MDLabel:
+                text: "Напряжение (В)"
+                size_hint_y: None
+                height: dp(30)
+
+            BoxLayout:
+                orientation: 'horizontal'
+                size_hint_y: None
+                height: dp(50)
+                
+                MDSlider:
+                    id: voltage_slider
+                    min: 10
+                    max: 50
+                    value: 25
+                    size_hint_x: 0.8
+                
+                MDLabel:
+                    id: voltage_value_label
+                    text: "25 В"
+                    size_hint_x: 0.2
+                    halign: "center"
+
+            MDLabel:
+                text: "Тип шва"
+                size_hint_y: None
+                height: dp(30)
+
+            MDSpinner:
+                id: weld_type_spinner
+                values: ["Стыковой", "Угловой", "Тавровый", "Нахлёсточный"]
+                text: "Стыковой"
+
+            MDLabel:
+                text: "Контроль качества"
+                size_hint_y: None
+                height: dp(30)
+
+            MDBoxLayout:
+                orientation: 'horizontal'
+                size_hint_y: None
+                height: dp(48)
+
+                MDCheckbox:
+                    id: visual_check
+                    size_hint: None, None
+                    size: dp(48), dp(48)
+                    active: False
+                MDLabel:
+                    text: "Визуальный контроль"
+
+            MDBoxLayout:
+                orientation: 'horizontal'
+                size_hint_y: None
+                height: dp(48)
+
+                MDCheckbox:
+                    id: ultrasound_check
+                    size_hint: None, None
+                    size: dp(48), dp(48)
+                    active: False
+                MDLabel:
+                    text: "Ультразвуковой контроль"
+
+            MDRaisedButton:
+                id: save_btn
+                text: "СОХРАНИТЬ ЗАПИСЬ"
+                md_bg_color: "#FF7043"
+                size_hint: 1, None
+                height: dp(50)
+                on_release: root.save_record()
+
+        # Пустой виджет для заполнения пространства
+        Widget:
+            size_hint_y: 0.1
+
+<RecordsListScreen>:
+    MDBoxLayout:
+        orientation: 'vertical'
+
+        MDTopAppBar:
+            title: "Список сварочных работ"
+            left_action_items: [["arrow-left", lambda x: setattr(root.manager, 'current', 'main')]]
+            elevation: 2
+
+        MDBoxLayout:
+            orientation: 'horizontal'
+            size_hint_y: None
+            height: dp(70)
+            padding: dp(10)
+            spacing: dp(10)
+
+            MDTextField:
+                id: filter_field
+                hint_text: "Фильтр по объекту/сварщику"
+                mode: "rectangle"
+                on_text: root.apply_filter()
+                size_hint_x: 0.8
+
+            MDRaisedButton:
+                text: "Фильтр"
+                on_release: root.apply_filter()
+                size_hint_x: 0.2
+
+        MDLabel:
+            text: "Общий прогресс выполнения:"
+            size_hint_y: None
+            height: dp(30)
+
+        Widget:
+            id: chart_widget
+            size_hint_y: None
+            height: dp(30)
+
+        MDProgressBar:
+            id: progress_bar
+            size_hint_y: None
+            height: dp(20)
+            value: 0
+
+        ScrollView:
+            MDList:
+                id: records_list
+
+        MDLabel:
+            id: empty_label
+            text: "Нет записей"
+            halign: "center"
+            size_hint_y: None
+            height: dp(50)
+            opacity: 0
