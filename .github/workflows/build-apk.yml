@@ -20,7 +20,7 @@ jobs:
       - name: Install buildozer dependencies
         run: |
           sudo apt update
-          sudo apt install -y git zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo5 cmake libffi-dev libssl-dev
+          sudo apt install -y git zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev cmake libffi-dev libssl-dev
 
       - name: Install Cython and Buildozer
         run: |
@@ -40,7 +40,6 @@ jobs:
           sed -i 's/# android.api = 30/android.api = 33/' buildozer.spec
           sed -i 's/# android.minapi = 21/android.minapi = 21/' buildozer.spec
           sed -i 's/# android.ndk = 23b/android.ndk = 23b/' buildozer.spec
-          echo "android.gradle_dependencies = 'com.google.firebase:firebase-admin:9.1.1'" >> buildozer.spec
           buildozer -v android debug
 
       - name: Upload APK
