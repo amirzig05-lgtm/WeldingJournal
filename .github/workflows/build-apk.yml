@@ -40,11 +40,19 @@ jobs:
           sed -i 's/# android.minapi = 21/android.minapi = 21/' buildozer.spec
           sed -i 's/# android.ndk = 23b/android.ndk = 23b/' buildozer.spec
           sed -i 's/# android.accept_sdk_license = False/android.accept_sdk_license = True/' buildozer.spec
+          # Добавляем зеркало для скачивания
+          echo "p4a.branch = develop" >> buildozer.spec
+          echo "android.ndk = 23b" >> buildozer.spec
 
       - name: Build APK with Buildozer
         run: |
-          # Автоматически принимаем лицензии Android SDK
+          # Принимаем лицензии
+          mkdir -p ~/.android
+          echo "### User Sources for Android SDK" >> ~/.android/repositories.cfg
           yes | $HOME/.buildozer/android/platform/android-sdk/tools/bin/sdkmanager --licenses || true
+          # Устанавливаем таймауты побольше
+          export P4A_IGNORE_SSL_ERRORS=1
+          export P4A_TIMEOUT=1200
           buildozer -v android debug
 
       - name: Upload APK
