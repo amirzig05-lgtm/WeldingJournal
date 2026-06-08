@@ -1,0 +1,39 @@
+name: Build Simple APK
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install buildozer
+        run: |
+          sudo apt update
+          sudo apt install -y git zip unzip openjdk-17-jdk python3-pip
+          pip3 install buildozer
+          buildozer init
+          sed -i 's/title = My Application/title = WeldingJournal/' buildozer.spec
+          sed -i 's/package.name = myapp/package.name = weldingjournal/' buildozer.spec
+          sed -i 's/requirements = python3,kivy/requirements = python3,kivy/' buildozer.spec
+          sed -i 's/# android.accept_sdk_license = False/android.accept_sdk_license = True/' buildozer.spec
+          sed -i 's/# android.api = 30/android.api = 33/' buildozer.spec
+
+      - name: Build APK
+        run: |
+          yes | $HOME/.buildozer/android/platform/android-sdk/tools/bin/sdkmanager --licenses || true
+          buildozer -v android debug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: SimpleAPK
+          path: bin/*.apk
